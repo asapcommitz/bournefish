@@ -32,11 +32,16 @@ bash -c "VAR=value echo $VAR"
 ## Detected Patterns
 
 bournefish automatically handles:
-- Inline variable assignments (`VAR=value command`)
-- Backtick substitution (`` `command` ``)
-- Bash-style command substitution (`$(command)`)
-- Test bracket syntax (`[ condition ]`)
-- Bash-specific builtins and syntax
+- **Inline variable assignments** (`VAR=value command`)
+- **Bash builtins** (`export`, `source`, `alias`, `local`, `declare`, `typeset`)
+- **Double bracket tests** (`[[ condition ]]`)
+- **Bash-style redirections** (`&>`, `2>&1`)
+
+## Known Limitations
+
+- **Backticks** (`` `command` ``): Fish's parser rejects these before bournefish can intercept them. Use Fish's `(command)` or modern `$(command)` syntax instead.
+- **Complex Subshells**: While modern Fish supports `$(command)`, complex Bash-specific logic inside the subshell may still be flagged by the Fish parser before bournefish can handle it.
+- **Interactivity**: Commands run through `bash -c` are non-interactive subshells.
 
 ## Installation
 
@@ -62,9 +67,11 @@ Just use Fish normally. bournefish runs in the background and only activates whe
 MY_VAR=hello echo $MY_VAR
 # bournefish detects this and runs it in bash
 
-# Backtick substitution
-echo `date`
-# bournefish handles it
+# Bash exports
+export MY_OTHER_VAR=world
+# Note: Because this runs in a bash subshell, variables won't 
+# persist in your fish session, but scripts that expect 
+# export syntax will run without error.
 
 # Regular Fish commands work as normal
 set MY_VAR hello

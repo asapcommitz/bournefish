@@ -1,5 +1,5 @@
 function bournefish --description "Bash compatibility layer for Fish"
-    set -l cmd (commandline)
+    set -l cmd (commandline -j)
     set -l trimmed_cmd (string trim "$cmd")
 
     if test -z "$trimmed_cmd"
@@ -14,37 +14,25 @@ function bournefish --description "Bash compatibility layer for Fish"
 
     set -l bash_detected 0
 
-    # 1. Inline variable assignment: VAR=val ...
-    if string match -qr '^\s*[A-Za-z_][A-Za-z0-9_]*=' "$trimmed_cmd"
+    if string match -qr '^\s*[A-Za-z_][A-Za-z0-9_]*=' "$trimmed_cmd" # Inline VAR=val
         set bash_detected 1
-    # 2. Backticks (anywhere)
-    else if string match -qr '`' "$trimmed_cmd"
+    else if string match -qr '\[\[ .* \]\]' "$trimmed_cmd" # Double brackets
         set bash_detected 1
-    # 3. Bash subshells $(...) or double dynamic variables ${...}
-    else if string match -qr '\$\(.*\)' "$trimmed_cmd"
+    else if string match -qr '^\s*\[ .* \]' "$trimmed_cmd" # Single brackets
         set bash_detected 1
-    # 4. Double brackets [[ ... ]]
-    else if string match -qr '\[\[ .* \]\]' "$trimmed_cmd"
+    else if string match -qr '(&>|2>&1)' "$trimmed_cmd" # Bash redirections
         set bash_detected 1
-    # 5. Bash redirections
-    else if string match -qr '(&>|2>&1|1>&2)' "$trimmed_cmd"
-        set bash_detected 1
-    # 6. Test brackets [ ... ] at the start
-    else if string match -qr '^\s*\[\s+' "$trimmed_cmd"
-        set bash_detected 1
-    # 7. Bash builtins
-    else if string match -qr '^\s*(export|source|shopt|local|declare|typeset)\s+' "$trimmed_cmd"
+    else if string match -qr '^\s*(export|source|shopt|local|declare|typeset|alias)\s+' "$trimmed_cmd" # Bash builtins
         set bash_detected 1
     end
 
     if test $bash_detected -eq 1
-        commandline -f repaint
         history add "$cmd"
         echo ""
-        bash -c "$cmd"
+        command bash -c "$cmd"
         set -l exit_code $status
         commandline -r ""
-        commandline -f execute
+        commandline -f repaint
         return $exit_code
     end
 
