@@ -7,7 +7,7 @@ function bournefish --description "Bash compatibility layer for Fish"
         return
     end
 
-    if string match -qr '^(bash|sudo|time)\s' "$trimmed_cmd"
+    if string match -qr '^(bash|sudo|time|man|type|which)\s' "$trimmed_cmd"
         commandline -f execute
         return
     end
@@ -31,8 +31,14 @@ function bournefish --description "Bash compatibility layer for Fish"
     end
 
     if test $bash_detected -eq 1
-        set -l escaped_cmd (string escape -- $cmd)
-        commandline -r "bash -c $escaped_cmd"
+        commandline -f repaint
+        history add "$cmd"
+        echo ""
+        bash -c "$cmd"
+        set -l exit_code $status
+        commandline -r ""
+        commandline -f execute
+        return $exit_code
     end
 
     commandline -f execute
