@@ -27,13 +27,8 @@ function bournefish --description "Bash compatibility layer for Fish"
     end
 
     if test $bash_detected -eq 1
-        history add "$cmd"
-        echo ""
-        command bash -c "$cmd"
-        set -l exit_code $status
-        commandline -r ""
-        commandline -f repaint
-        return $exit_code
+        set -l escaped_cmd (string escape -- $cmd)
+        commandline -r "bash -c $escaped_cmd"
     end
 
     commandline -f execute

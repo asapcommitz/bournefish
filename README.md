@@ -1,6 +1,6 @@
 # bournefish
 
-**bournefish** is a Fish shell compatibility layer that automatically detects and executes Bash/Zsh commands. When you type a Bash-style command in Fish, bournefish silently wraps it in `bash -c` and runs it, making the transition from Bash/Zsh to Fish seamless.
+**bournefish** is a Fish shell compatibility layer that automatically detects and executes Bash/Zsh commands. When you type a Bash-style command in Fish, bournefish wraps it in `bash -c` and runs it, making the transition from Bash/Zsh to Fish seamless.
 
 ## Why bournefish?
 
@@ -8,7 +8,7 @@ Switching shells is hard. You've built muscle memory for Bash syntax over years,
 
 ## How It Works
 
-bournefish hooks into Fish's command execution and detects Bash-specific syntax patterns. When it finds them, it automatically wraps your command in `bash -c "..."` behind the scenes. You never see the wrapper, but your Bash commands just work.
+bournefish hooks into Fish's command execution and detects Bash-specific syntax patterns. When it finds them, it automatically wraps your command in `bash -c "..."` right before execution. You'll see the wrapper, so you know exactly what's being run in Bash.
 
 **Example:**
 ```fish
@@ -24,7 +24,7 @@ bash -c "VAR=value echo $VAR"
 ## Features
 
 - **Automatic Detection**: Recognizes Bash-specific syntax patterns
-- **Invisible Execution**: Commands run in Bash without you noticing
+- **Transparent Execution**: See the command as it's wrapped for Bash
 - **Zero Configuration**: Works immediately after installation
 - **Training Wheels**: Use Bash habits while learning Fish
 - **Pure Fish**: No external dependencies besides bash itself
